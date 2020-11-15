@@ -101,3 +101,20 @@ std::optional<T> read_opt(const std::string prompt = "") {
 	}
 	return retval;
 }
+
+//This version reads from a file, so no prompt
+//Like the other read_opt, returns nullopt if it didn't read what was expected
+template<class T>
+std::optional<T> read_opt(std::istream &ins) {
+	if (ins.eof()) //We reached the end of file, or the user hit ctrl-d
+		return std::nullopt;  //Return that nothing was read
+	T retval{};
+	ins >> retval;
+	if (!ins) {
+		ins.clear(); //Clear error code, so the user can try again when they like
+		return std::nullopt;  //Return that nothing was read
+	}
+	return retval;
+}
+//End requiring C++17 and above
+#endif
