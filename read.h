@@ -118,3 +118,40 @@ std::optional<T> read_opt(std::istream &ins) {
 }
 //End requiring C++17 and above
 #endif
+//Simplest read possible: int x = read();
+//Credit: /u/9cantthinkofgoodname, modified to support C++98 by maqalaqil
+//However, int x = read(ins) is about 20% slower than using read<int>(ins), though
+//There's probably some template tricks we can use to eliminate the while loop when reading from a file
+struct Reader {
+	Reader(std::istream& ins_, const std::string& prompt_) : ins(ins_), prompt(prompt_) {}
+	template<class T>
+		operator T() {
+			while(true) {
+				if(ins.eof()) //We reached the end of file, or the user hit ctrl-d
+					return T(); //Alternatively, we could throw an exception
+				T retval;
+				std::istream::pos_type pos = ins.tellg(); //save the current position
+				std::cout << prompt;
+				ins >> retval; //If this fails, it's because you need a operator>> defined for your type
+				if(!ins) {
+					ins.clear(); //Clear error code
+					if(ins.tellg() > pos) // check whether the stream has advanced
+						continue;
+					std::string s;
+					ins >> s; //Remove the word that caused the error
+					continue;
+				}
+				return retval;
+			}
+		}
+	std::istream &ins;
+	const std::string prompt;
+};
+
+Reader read(const std::string prompt = "") {
+	return Reader(std::cin,prompt);
+}
+Reader read(std::istream &ins) {
+	return Reader(ins,"");
+}
+#endif
