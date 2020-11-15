@@ -66,3 +66,14 @@ std::string readline(const std::string prompt = "", char delimiter = '\n') {
 		throw std::runtime_error("Error within the readline function.");
 	return retval;
 }
+//Getline equivalent for reading from a file
+std::string readline(std::istream &ins, char delimiter = '\n') {
+	std::string retval;
+	ins >> std::ws;
+	std::getline(ins,retval,delimiter);
+	if (ins.eof()) //We reached the end of file, or the user hit ctrl-d
+		return retval;
+	if (!ins)
+		throw std::runtime_error("Error within the readline function.");
+	return retval;
+}
