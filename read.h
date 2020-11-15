@@ -31,3 +31,25 @@ T read(const std::string prompt = "") {
 		return retval;
 	}
 }
+//Read a T from a file, so no prompt
+//Example:
+//auto d = read<double>(file);
+template<class T>
+T read(std::istream &ins) {
+	while (true) {
+		if (ins.eof()) //We reached the end of file, or the user hit ctrl-d
+			return T();
+		T retval;
+		std::istream::pos_type pos = ins.tellg();
+		ins >> retval;
+		if (!ins) {
+			ins.clear(); //Clear error code
+			if(ins.tellg() > pos) // check whether the stream has advanced
+				continue;
+			std::string s;
+			ins >> s; //Remove the word that caused the error
+			continue;
+		}
+		return retval;
+	}
+}
