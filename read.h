@@ -77,3 +77,27 @@ std::string readline(std::istream &ins, char delimiter = '\n') {
 		throw std::runtime_error("Error within the readline function.");
 	return retval;
 }
+
+//To use read_opt requires C++17 and above
+#if __cplusplus >= 201703L
+#include <optional>
+//Returns an optional. So if your specified type is not read, the caller will know this rather than silently discarding the error
+//Recommended for more advanced programmers than read()
+//If an error occurs, it does not affect the input stream at all and clears the failbit
+// Example:
+// auto a = read_opt<int>(); 
+// if (!a) exit(EXIT_FAILURE);
+// cout << *a << endl;
+template<class T>
+std::optional<T> read_opt(const std::string prompt = "") {
+	if (std::cin.eof()) //We reached the end of file, or the user hit ctrl-d
+		return std::nullopt;  //Return that nothing was read
+	T retval{};
+	std::cout << prompt;
+	std::cin >> retval;
+	if (!std::cin) {
+		std::cin.clear(); //Clear error code, so the user can try again when they like
+		return std::nullopt;  //Return that nothing was read
+	}
+	return retval;
+}
